@@ -1,9 +1,7 @@
-from http import client
 import os
 from dotenv import load_dotenv
 import spotipy
 import spotipy.util as util
-import json
 
 load_dotenv()
 
@@ -39,9 +37,6 @@ for track in saved_tracks['items']:
     album_release_date           = track['track']['album']['release_date']
     album_release_date_precision = track['track']['album']['release_date_precision']
     album_number_of_tracks       = track['track']['album']['total_tracks']
-
-    # print(track['track'])
-    # print('\n')
     
     with open('tracks.csv', 'a') as f:
         f.write(f"{id},{name},{duration_ms},{explicit},{popularity}\n")
@@ -49,25 +44,5 @@ for track in saved_tracks['items']:
         f.write(f"{artists_id},{artists_name}\n")
     with open('album.csv', 'a') as f:
         f.write(f"{album_id},{album_name},{album_type},{album_release_date},{album_release_date_precision},{album_number_of_tracks}\n")
-
-
-# playlists = sp.user_playlists(user="12180975548")
-# for playlist in playlists['items']:
-#     print(playlist['name'])
-#     print(playlist)
-#     print("\n")
-
-# temp_playlist = sp.playlist(playlist_id="2VgAYZyszoVQMw0TznVlap")
-# print(temp_playlist['tracks']['total'])
-
-
-# offset = 0
-# temp_playlist_tracks = sp.playlist_items(playlist_id="2VgAYZyszoVQMw0TznVlap", offset=offset)
-# while(len(temp_playlist_tracks['items']) == 100):
-#     for track in temp_playlist_tracks['items']:
-#         print(track['track']['name'], ": ", track['track']['id'])
-
-#     offset += 100
-#     temp_playlist_tracks = sp.playlist_items(playlist_id="2VgAYZyszoVQMw0TznVlap", offset=offset)
 
 
