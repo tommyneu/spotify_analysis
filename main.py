@@ -19,7 +19,10 @@ if not token:
 
 sp = spotipy.Spotify(auth=token)
 
-saved_tracks = sp.current_user_saved_tracks()
+saved_tracks = sp.current_user_saved_tracks(limit=50)
+
+# TODO: DELETE the files that are already there
+# TODO: add logic for getting all the saved tracks
 
 for track in saved_tracks['items']:
     id          = track['track']['id']
@@ -37,7 +40,9 @@ for track in saved_tracks['items']:
     album_release_date           = track['track']['album']['release_date']
     album_release_date_precision = track['track']['album']['release_date_precision']
     album_number_of_tracks       = track['track']['album']['total_tracks']
-    
+
+    # TODO: any other api calls for data such as artists data and basic track analysis
+
     with open('tracks.csv', 'a') as f:
         f.write(f"{id},{name},{duration_ms},{explicit},{popularity}\n")
     with open('artists.csv', 'a') as f:
