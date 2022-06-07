@@ -5,25 +5,33 @@ import spotipy.util as util
 
 load_dotenv()
 
+# sets environment variables
 scope    = 'user-library-read'
 username = os.environ.get("SPOTIPY_USERNAME")
 cid      = os.environ.get("SPOTIPY_CLIENT_ID")
 secret   = os.environ.get("SPOTIPY_CLIENT_SECRET")
 redirect = os.environ.get("SPOTIPY_REDIRECT_URI")
 
+# get token and set up spotipy
 token = util.prompt_for_user_token(username, scope, client_id=cid,client_secret=secret, redirect_uri=redirect)
-
 if not token:
     print("Token Error")
     exit()
-
 sp = spotipy.Spotify(auth=token)
 
 saved_tracks = sp.current_user_saved_tracks(limit=50)
 
-# TODO: DELETE the files that are already there
-# TODO: add logic for getting all the saved tracks
 
+# puts the column headings in and removes any data previously in the files
+with open('tracks.csv', 'w') as f:
+        f.write(f"id,name,duration_ms,explicit,popularity\n")
+with open('artists.csv', 'w') as f:
+    f.write(f"artist_id,artist_name\n")
+with open('album.csv', 'w') as f:
+    f.write(f"album_id,album_name,album_type,album_release_date,album_release_date_precision,album_number_of_tracks\n")
+
+
+# TODO: add logic for getting all the saved tracks
 for track in saved_tracks['items']:
     id          = track['track']['id']
     name        = track['track']['name']
@@ -46,7 +54,10 @@ for track in saved_tracks['items']:
     with open('tracks.csv', 'a') as f:
         f.write(f"{id},{name},{duration_ms},{explicit},{popularity}\n")
     with open('artists.csv', 'a') as f:
-        f.write(f"{artists_id},{artists_name}\n")
+
+        # TODO: remove duplicate artists
+        for single_artist_id, single_artist_name in zip(artists_id, artists_name):
+            f.write(f"{single_artist_id},{single_artist_name}\n")
     with open('album.csv', 'a') as f:
         f.write(f"{album_id},{album_name},{album_type},{album_release_date},{album_release_date_precision},{album_number_of_tracks}\n")
 
