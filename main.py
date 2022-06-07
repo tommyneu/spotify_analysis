@@ -23,27 +23,32 @@ sp = spotipy.Spotify(auth=token)
 
 saved_tracks = sp.current_user_saved_tracks()
 
-with open('tracks.csv', 'w') as f:
-    for track in saved_tracks['items']:
-        id          = track['track']['id']
-        name        = track['track']['name']
-        duration_ms = track['track']['duration_ms']
-        explicit    = track['track']['explicit']
-        popularity  = track['track']['popularity']
+for track in saved_tracks['items']:
+    id          = track['track']['id']
+    name        = track['track']['name']
+    duration_ms = track['track']['duration_ms']
+    explicit    = track['track']['explicit']
+    popularity  = track['track']['popularity']
 
-        artists_id   = [artist['id'] for artist in track['track']['artists']]
-        artists_name = [artist['name'] for artist in track['track']['artists']]
+    artists_id   = [artist['id'] for artist in track['track']['artists']]
+    artists_name = [artist['name'] for artist in track['track']['artists']]
 
-        album_id                     = track['track']['album']['id']
-        album_name                   = track['track']['album']['name']
-        album_type                   = track['track']['album']['album_type']
-        album_release_date           = track['track']['album']['release_date']
-        album_release_date_precision = track['track']['album']['release_date_precision']
-        album_number_of_tracks       = track['track']['album']['total_tracks']
+    album_id                     = track['track']['album']['id']
+    album_name                   = track['track']['album']['name']
+    album_type                   = track['track']['album']['album_type']
+    album_release_date           = track['track']['album']['release_date']
+    album_release_date_precision = track['track']['album']['release_date_precision']
+    album_number_of_tracks       = track['track']['album']['total_tracks']
 
-        print(track['track'])
-        print('\n')
-        # f.write(f"{track['track']['id']},{track['track']['name']},{track['track']['artists']}\n")
+    # print(track['track'])
+    # print('\n')
+    
+    with open('tracks.csv', 'a') as f:
+        f.write(f"{id},{name},{duration_ms},{explicit},{popularity}\n")
+    with open('artists.csv', 'a') as f:
+        f.write(f"{artists_id},{artists_name}\n")
+    with open('album.csv', 'a') as f:
+        f.write(f"{album_id},{album_name},{album_type},{album_release_date},{album_release_date_precision},{album_number_of_tracks}\n")
 
 
 # playlists = sp.user_playlists(user="12180975548")
