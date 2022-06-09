@@ -4,9 +4,9 @@ from neo4j.debug import watch
 
 Driver = None
 
-def create_connection(username, password):
+def create_connection(url="localhost:7687", username="neo4j", password="neo4j"):
     global Driver
-    uri = "neo4j://neo4j:7687"
+    uri = "neo4j://" + url
     Driver = GraphDatabase.driver(uri, auth=(username, password))
 
 def close_connection():

@@ -16,7 +16,7 @@ def init_sp():
     redirect = os.environ.get("SPOTIPY_REDIRECT_URI")
 
     # get token and set up spotipy
-    token = util.prompt_for_user_token(username, scope, client_id=cid,client_secret=secret, redirect_uri=redirect)
+    token = util.prompt_for_user_token(username, scope, client_id=cid, client_secret=secret, redirect_uri=redirect)
     if not token:
         print("Token Error")
         exit()
@@ -76,10 +76,11 @@ if __name__ == "__main__":
     main()
     print("finished")
 
-    neo4j_username   = os.environ.get("NEO4J_USERNAME")
+    neo4j_username = os.environ.get("NEO4J_USERNAME")
     neo4j_password = os.environ.get("NEO4J_PASSWORD")
+    neo4j_url      = os.environ.get("NEO4J_URL")
 
-    db.create_connection(neo4j_username, neo4j_password)
+    db.create_connection(neo4j_url, neo4j_username, neo4j_password)
     # db.create_track_node(123)
     result = db.get_track_node(123)
     print(result)
