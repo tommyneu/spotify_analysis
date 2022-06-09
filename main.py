@@ -32,11 +32,11 @@ def main():
 
 
     # puts the column headings in and removes any data previously in the files
-    with open('tracks.csv', 'w') as f:
+    with open('data/tracks.csv', 'w') as f:
             f.write(f"id,name,duration_ms,explicit,popularity\n")
-    with open('artists.csv', 'w') as f:
+    with open('data/artists.csv', 'w') as f:
         f.write(f"artist_id,artist_name\n")
-    with open('album.csv', 'w') as f:
+    with open('data/album.csv', 'w') as f:
         f.write(f"album_id,album_name,album_type,album_release_date,album_release_date_precision,album_number_of_tracks\n")
 
 
@@ -60,14 +60,14 @@ def main():
 
         # TODO: any other api calls for data such as artists data and basic track analysis
 
-        with open('tracks.csv', 'a') as f:
+        with open('data/tracks.csv', 'a') as f:
             f.write(f"{id},{name},{duration_ms},{explicit},{popularity}\n")
-        with open('artists.csv', 'a') as f:
+        with open('data/artists.csv', 'a') as f:
 
             # TODO: remove duplicate artists
             for single_artist_id, single_artist_name in zip(artists_id, artists_name):
                 f.write(f"{single_artist_id},{single_artist_name}\n")
-        with open('album.csv', 'a') as f:
+        with open('data/album.csv', 'a') as f:
             f.write(f"{album_id},{album_name},{album_type},{album_release_date},{album_release_date_precision},{album_number_of_tracks}\n")
 
 
@@ -83,8 +83,11 @@ if __name__ == "__main__":
     main()
     print("finished")
 
+    neo4j_username   = os.environ.get("NEO4J_USERNAME")
+    neo4j_password = os.environ.get("NEO4J_PASSWORD")
+
     uri = "neo4j://neo4j:7687"
-    driver = GraphDatabase.driver(uri, auth=("neo4j", "password"))
+    driver = GraphDatabase.driver(uri, auth=(neo4j_username, neo4j_password))
 
     with driver.session() as session:
         result = session.write_transaction(create_person, "bob")
