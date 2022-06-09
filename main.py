@@ -1,9 +1,9 @@
 import os
+import re
 from dotenv import load_dotenv
 import spotipy
 import spotipy.util as util
-from neo4j import GraphDatabase
-from neo4j.debug import watch
+import database as db
 
 def init_sp():
     load_dotenv()
@@ -71,13 +71,6 @@ def main():
             f.write(f"{album_id},{album_name},{album_type},{album_release_date},{album_release_date_precision},{album_number_of_tracks}\n")
 
 
-def create_person(tx, name):
-    result = tx.run("CREATE (p:Person{name:$name}) RETURN p", name=name).data()
-    return result
-
-def get_person(tx, name):
-    result = tx.run("MATCH (p:Person) RETURN p", name=name).data()
-    return result
 
 if __name__ == "__main__":
     main()
@@ -86,15 +79,9 @@ if __name__ == "__main__":
     neo4j_username   = os.environ.get("NEO4J_USERNAME")
     neo4j_password = os.environ.get("NEO4J_PASSWORD")
 
-    uri = "neo4j://neo4j:7687"
-    driver = GraphDatabase.driver(uri, auth=(neo4j_username, neo4j_password))
-
-    with driver.session() as session:
-        result = session.write_transaction(create_person, "bob")
-        print([record for record in result])
-        result = session.read_transaction(get_person, "bob")
-        print([record for record in result])
-        
-
-    driver.close()
+    db.create_connection(neo4j_username, neo4j_password)
+    # db.create_track_node(123)
+    result = db.get_track_node(123)
+    print(result)
+    db.close_connection()
 

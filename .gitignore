@@ -2,3 +2,4 @@
 .cache*
 *.csv
 neo4j/
+__pycache__/
