@@ -28,47 +28,30 @@ def init_sp():
 
 def main():
     sp = init_sp()
-    saved_tracks = sp.current_user_saved_tracks(limit=50)
-
-
-    # puts the column headings in and removes any data previously in the files
-    with open('data/tracks.csv', 'w') as f:
-            f.write(f"id,name,duration_ms,explicit,popularity\n")
-    with open('data/artists.csv', 'w') as f:
-        f.write(f"artist_id,artist_name\n")
-    with open('data/album.csv', 'w') as f:
-        f.write(f"album_id,album_name,album_type,album_release_date,album_release_date_precision,album_number_of_tracks\n")
+    # saved_tracks = sp.current_user_saved_tracks(limit=50)
 
 
     # TODO: add logic for getting all the saved tracks
-    for track in saved_tracks['items']:
-        id          = track['track']['id']
-        name        = track['track']['name']
-        duration_ms = track['track']['duration_ms']
-        explicit    = track['track']['explicit']
-        popularity  = track['track']['popularity']
+    # for track in saved_tracks['items']:
+    #     id          = track['track']['id']
+    #     name        = track['track']['name']
+    #     duration_ms = track['track']['duration_ms']
+    #     explicit    = track['track']['explicit']
+    #     popularity  = track['track']['popularity']
 
-        artists_id   = [artist['id'] for artist in track['track']['artists']]
-        artists_name = [artist['name'] for artist in track['track']['artists']]
+    #     artists_id   = [artist['id'] for artist in track['track']['artists']]
+    #     artists_name = [artist['name'] for artist in track['track']['artists']]
 
-        album_id                     = track['track']['album']['id']
-        album_name                   = track['track']['album']['name']
-        album_type                   = track['track']['album']['album_type']
-        album_release_date           = track['track']['album']['release_date']
-        album_release_date_precision = track['track']['album']['release_date_precision']
-        album_number_of_tracks       = track['track']['album']['total_tracks']
+    #     album_id                     = track['track']['album']['id']
+    #     album_name                   = track['track']['album']['name']
+    #     album_type                   = track['track']['album']['album_type']
+    #     album_release_date           = track['track']['album']['release_date']
+    #     album_release_date_precision = track['track']['album']['release_date_precision']
+    #     album_number_of_tracks       = track['track']['album']['total_tracks']
 
         # TODO: any other api calls for data such as artists data and basic track analysis
 
-        with open('data/tracks.csv', 'a') as f:
-            f.write(f"{id},{name},{duration_ms},{explicit},{popularity}\n")
-        with open('data/artists.csv', 'a') as f:
-
-            # TODO: remove duplicate artists
-            for single_artist_id, single_artist_name in zip(artists_id, artists_name):
-                f.write(f"{single_artist_id},{single_artist_name}\n")
-        with open('data/album.csv', 'a') as f:
-            f.write(f"{album_id},{album_name},{album_type},{album_release_date},{album_release_date_precision},{album_number_of_tracks}\n")
+        # TODO: store in database
 
 
 
@@ -81,8 +64,21 @@ if __name__ == "__main__":
     neo4j_url      = os.environ.get("NEO4J_URL")
 
     db.create_connection(neo4j_url, neo4j_username, neo4j_password)
-    # db.create_track_node(123)
-    result = db.get_track_node(123)
+    db.create_track_node(135)
+    result = db.get_track_node(135)
     print(result)
+    db.delete_track_node(135)
+
+    db.create_album_node(135)
+    result = db.get_album_node(135)
+    print(result)
+    db.delete_album_node(135)
+
+    db.create_artist_node(255)
+    result = db.get_artist_node(255)
+    print(result)
+    db.delete_artist_node(255)
+
+
     db.close_connection()
 

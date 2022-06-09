@@ -27,5 +27,6 @@ a users saved tracks and will output into a neo4j database
 
 ## Wish List 🎂
 
+- Unit Tests
 - Analyzing data from songs
 - Placing songs into playlists
