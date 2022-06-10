@@ -13,6 +13,89 @@ def close_connection():
     global Driver
     Driver.close()
 
+def connect_nodes(node_a_type, node_a_id, node_b_type, node_b_id):
+    types = [node_a_type.upper(), node_b_type.upper()]
+
+    if "TRACK" in types and "ALBUM" in types:
+        if node_a_type.upper() == "TRACK":
+            return connect_track_and_album(node_a_id, node_b_id)
+        return connect_track_and_album(node_b_id, node_a_id)
+
+    if "TRACK" in types and "ARTIST" in types:
+        if node_a_type.upper() == "TRACK":
+            return connect_track_and_artist(node_a_id, node_b_id)
+        return connect_track_and_artist(node_b_id, node_a_id)
+
+    if "ARTIST" in types and "ALBUM" in types:
+        if node_a_type.upper() == "ARTIST":
+            return connect_artist_and_album(node_a_id, node_b_id)
+        return connect_artist_and_album(node_b_id, node_a_id)
+
+def connect_track_and_album(track_id, album_id):
+    global Driver
+
+    def connect_track_and_album_query(tx):
+        result = tx.run("""
+            MATCH
+                (t:Track),
+                (b:Album)
+            WHERE t.id = $track_id AND b.id = $album_id
+            MERGE (t)-[i:In]->(b)
+            RETURN i
+        """, 
+            track_id=track_id,
+            album_id=album_id
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(connect_track_and_album_query)
+
+    return [record for record in result]
+
+def connect_track_and_artist(track_id, artist_id):
+    global Driver
+
+    def connect_track_and_artist_query(tx):
+        result = tx.run("""
+            MATCH
+                (t:Track),
+                (a:Artist)
+            WHERE t.id = $track_id AND a.id = $artist_id
+            MERGE (t)-[w:Wrote]->(a)
+            RETURN w
+        """, 
+            track_id=track_id,
+            artist_id=artist_id
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(connect_track_and_artist_query)
+
+    return [record for record in result]
+
+def connect_artist_and_album(artist_id, album_id):
+    global Driver
+
+    def connect_artist_and_album_query(tx):
+        result = tx.run("""
+            MATCH
+                (a:Artist),
+                (b:Album)
+            WHERE a.id = $artist_id AND b.id = $album_id
+            MERGE (a)-[p:Produced]->(b)
+            RETURN p
+        """, 
+            artist_id=artist_id,
+            album_id=album_id
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(connect_artist_and_album_query)
+
+    return [record for record in result]
 
 #   _______             _
 #  |__   __|           | |
@@ -24,7 +107,7 @@ def create_track_node(id):
     global Driver
 
     def create_track_query(tx):
-        result = tx.run("CREATE (t:Track{id:$id}) RETURN t", 
+        result = tx.run("MERGE (t:Track{id:$id}) RETURN t", 
             id=id
         ).data()
         return result
@@ -89,7 +172,7 @@ def create_album_node(id):
     global Driver
 
     def create_album_query(tx):
-        result = tx.run("CREATE (b:Album{id:$id}) RETURN b",
+        result = tx.run("MERGE (b:Album{id:$id}) RETURN b",
             id=id
         ).data()
         return result
@@ -153,7 +236,7 @@ def create_artist_node(id):
     global Driver
 
     def create_artist_query(tx):
-        result = tx.run("CREATE (a:Artist{id:$id}) RETURN a",
+        result = tx.run("MERGE (a:Artist{id:$id}) RETURN a",
             id=id
         ).data()
         return result
