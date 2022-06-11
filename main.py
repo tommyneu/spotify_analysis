@@ -1,9 +1,9 @@
 import os
-import re
 from dotenv import load_dotenv
 import spotipy
 import spotipy.util as util
 import database as db
+import json
 
 def init_sp():
     load_dotenv()
@@ -57,6 +57,12 @@ def main():
         album_release_date           = track['track']['album']['release_date']
         album_release_date_precision = track['track']['album']['release_date_precision']
         album_number_of_tracks       = track['track']['album']['total_tracks']
+        album_artists_id             = [artist['id'] for artist in track['track']['album']['artists']]
+        album_artists_name           = [artist['name'] for artist in track['track']['album']['artists']]
+
+        # print(json.dumps(track, sort_keys=True, indent=2))
+        # print("")
+        # print("")
 
         # TODO: any other api calls for data such as artists data and basic track analysis
 
@@ -74,11 +80,15 @@ def main():
         db.set_album_property(album_id, "number_of_tracks",       album_number_of_tracks)
         db.connect_nodes("album", album_id, "track", track_id)
 
+        for single_artist_id, single_artist_name in zip(album_artists_id, album_artists_name):
+            db.create_artist_node(single_artist_id)
+            db.set_artist_property(single_artist_id, "name", single_artist_name)
+            db.connect_nodes("album", album_id, "artist", single_artist_id)
+
         for single_artist_id, single_artist_name in zip(artists_id, artists_name):
             db.create_artist_node(single_artist_id)
             db.set_artist_property(single_artist_id, "name", single_artist_name)
             db.connect_nodes("track", track_id, "artist", single_artist_id)
-            db.connect_nodes("album", album_id, "artist", single_artist_id)
 
         
 
