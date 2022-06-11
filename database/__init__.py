@@ -1,4 +1,3 @@
-from lib2to3.pgen2 import driver
 from neo4j import GraphDatabase
 from neo4j.debug import watch
 
@@ -62,7 +61,7 @@ def connect_track_and_artist(track_id, artist_id):
                 (t:Track),
                 (a:Artist)
             WHERE t.id = $track_id AND a.id = $artist_id
-            MERGE (t)-[w:Wrote]->(a)
+            MERGE (a)-[w:Wrote]->(t)
             RETURN w
         """, 
             track_id=track_id,
