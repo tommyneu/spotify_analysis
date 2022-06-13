@@ -149,6 +149,19 @@ def get_track_node(id):
 
     return [record for record in result]
 
+def get_all_track_nodes():
+    global Driver
+
+    def get_all_track_query(tx):
+        result = tx.run("MATCH (t:Track) RETURN t"
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(get_all_track_query)
+
+    return [record for record in result]
+
 def delete_track_node(id):
     global Driver
 
@@ -214,6 +227,19 @@ def get_album_node(id):
 
     return [record for record in result]
 
+def get_all_album_nodes():
+    global Driver
+
+    def get_all_album_query(tx):
+        result = tx.run("MATCH (b:Album) RETURN b"
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(get_all_album_query)
+
+    return [record for record in result]
+
 def delete_album_node(id):
     global Driver
 
@@ -275,6 +301,19 @@ def get_artist_node(id):
 
     with Driver.session() as session:
         result = session.write_transaction(get_artist_query)
+
+    return [record for record in result]
+
+def get_all_artist_nodes():
+    global Driver
+
+    def get_all_artist_query(tx):
+        result = tx.run("MATCH (a:Artist) RETURN a"
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(get_all_artist_query)
 
     return [record for record in result]
 

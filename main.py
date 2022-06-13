@@ -1,4 +1,5 @@
 import os
+from time import sleep
 from dotenv import load_dotenv
 import spotipy
 import spotipy.util as util
@@ -34,63 +35,115 @@ def init_db():
     db.create_connection(neo4j_url, neo4j_username, neo4j_password)
 
 
+def get_and_store_all_saved_tracks(sp):
+    offset = 0
+    max_limit_saved_tracks = 50
+    saved_tracks = sp.current_user_saved_tracks(limit=max_limit_saved_tracks, offset=offset)
+
+    while len(saved_tracks['items']) > 0:
+        print(f"tracks: {offset} - {offset + max_limit_saved_tracks}")
+        sleep(0.5)
+
+        for track in saved_tracks['items']:
+            track_added_at          = track['added_at']
+
+            track_id          = track['track']['id']
+            track_name        = track['track']['name']
+            track_duration_ms = track['track']['duration_ms']
+            track_explicit    = track['track']['explicit']
+            track_popularity  = track['track']['popularity']
+
+            artists_id   = [artist['id'] for artist in track['track']['artists']]
+            artists_name = [artist['name'] for artist in track['track']['artists']]
+
+            album_id                     = track['track']['album']['id']
+            album_name                   = track['track']['album']['name']
+            album_type                   = track['track']['album']['album_type']
+            album_release_date           = track['track']['album']['release_date']
+            album_release_date_precision = track['track']['album']['release_date_precision']
+            album_number_of_tracks       = track['track']['album']['total_tracks']
+            album_artists_id             = [artist['id'] for artist in track['track']['album']['artists']]
+            album_artists_name           = [artist['name'] for artist in track['track']['album']['artists']]
+
+            # print(json.dumps(track, sort_keys=True, indent=2))
+            # print("")
+            # print("")
+
+            # TODO: any other api calls for data such as artists data and basic track analysis
+
+            db.create_track_node(track_id)
+            db.set_track_property(track_id, "name",        track_name)
+            db.set_track_property(track_id, "duration_ms", track_duration_ms)
+            db.set_track_property(track_id, "explicit",    track_explicit)
+            db.set_track_property(track_id, "popularity",  track_popularity)
+            db.set_track_property(track_id, "added_at",    track_added_at)
+
+            db.create_album_node(album_id)
+            db.set_album_property(album_id, "name",                   album_name)
+            db.set_album_property(album_id, "type",                   album_type)
+            db.set_album_property(album_id, "release_date",           album_release_date)
+            db.set_album_property(album_id, "release_date_precision", album_release_date_precision)
+            db.set_album_property(album_id, "number_of_tracks",       album_number_of_tracks)
+            db.connect_nodes("album", album_id, "track", track_id)
+
+            for single_artist_id, single_artist_name in zip(album_artists_id, album_artists_name):
+                db.create_artist_node(single_artist_id)
+                db.set_artist_property(single_artist_id, "name", single_artist_name)
+                db.connect_nodes("album", album_id, "artist", single_artist_id)
+
+            for single_artist_id, single_artist_name in zip(artists_id, artists_name):
+                db.create_artist_node(single_artist_id)
+                db.set_artist_property(single_artist_id, "name", single_artist_name)
+                db.connect_nodes("track", track_id, "artist", single_artist_id)
+
+        offset += max_limit_saved_tracks
+        saved_tracks = sp.current_user_saved_tracks(limit=max_limit_saved_tracks, offset=offset)
+
+def get_and_store_audio_features_of_all_tracks(sp):
+    tracks_data = db.get_all_track_nodes()
+    tracks = [track['t']['id'] for track in tracks_data]
+    max_limit_audio_features = 100
+
+    for index in range(0, len(tracks), max_limit_audio_features):
+        sleep(0.5)
+        print(f"Audio Features: {index} - {index+max_limit_audio_features}")
+        tracks_subset = tracks[index:index+max_limit_audio_features]
+        results = sp.audio_features(tracks_subset)
+
+        for track in results:
+            id               = track['id']
+            danceability     = track['danceability']
+            energy           = track['energy']
+            key              = track['key']
+            loudness         = track['loudness']
+            mode             = track['mode']
+            speechiness      = track['speechiness']
+            acousticness     = track['acousticness']
+            instrumentalness = track['instrumentalness']
+            liveness         = track['liveness']
+            valence          = track['valence']
+            tempo            = track['tempo']
+            time_signature   = track['time_signature']
+
+            db.set_track_property(id, "danceability",     danceability)
+            db.set_track_property(id, "energy",           energy)
+            db.set_track_property(id, "key",              key)
+            db.set_track_property(id, "loudness",         loudness)
+            db.set_track_property(id, "mode",             mode)
+            db.set_track_property(id, "speechiness",      speechiness)
+            db.set_track_property(id, "acousticness",     acousticness)
+            db.set_track_property(id, "instrumentalness", instrumentalness)
+            db.set_track_property(id, "liveness",         liveness)
+            db.set_track_property(id, "valence",          valence)
+            db.set_track_property(id, "tempo",            tempo)
+            db.set_track_property(id, "time_signature",   time_signature)
 
 def main():
     init_db()
     sp = init_sp()
-    saved_tracks = sp.current_user_saved_tracks(limit=50)
 
-    # TODO: add logic for getting all the saved tracks
-    for track in saved_tracks['items']:
-        track_id          = track['track']['id']
-        track_name        = track['track']['name']
-        track_duration_ms = track['track']['duration_ms']
-        track_explicit    = track['track']['explicit']
-        track_popularity  = track['track']['popularity']
-
-        artists_id   = [artist['id'] for artist in track['track']['artists']]
-        artists_name = [artist['name'] for artist in track['track']['artists']]
-
-        album_id                     = track['track']['album']['id']
-        album_name                   = track['track']['album']['name']
-        album_type                   = track['track']['album']['album_type']
-        album_release_date           = track['track']['album']['release_date']
-        album_release_date_precision = track['track']['album']['release_date_precision']
-        album_number_of_tracks       = track['track']['album']['total_tracks']
-        album_artists_id             = [artist['id'] for artist in track['track']['album']['artists']]
-        album_artists_name           = [artist['name'] for artist in track['track']['album']['artists']]
-
-        # print(json.dumps(track, sort_keys=True, indent=2))
-        # print("")
-        # print("")
-
-        # TODO: any other api calls for data such as artists data and basic track analysis
-
-        db.create_track_node(track_id)
-        db.set_track_property(track_id, "name",        track_name)
-        db.set_track_property(track_id, "duration_ms", track_duration_ms)
-        db.set_track_property(track_id, "explicit",    track_explicit)
-        db.set_track_property(track_id, "popularity",  track_popularity)
-
-        db.create_album_node(album_id)
-        db.set_album_property(album_id, "name",                   album_name)
-        db.set_album_property(album_id, "type",                   album_type)
-        db.set_album_property(album_id, "release_date",           album_release_date)
-        db.set_album_property(album_id, "release_date_precision", album_release_date_precision)
-        db.set_album_property(album_id, "number_of_tracks",       album_number_of_tracks)
-        db.connect_nodes("album", album_id, "track", track_id)
-
-        for single_artist_id, single_artist_name in zip(album_artists_id, album_artists_name):
-            db.create_artist_node(single_artist_id)
-            db.set_artist_property(single_artist_id, "name", single_artist_name)
-            db.connect_nodes("album", album_id, "artist", single_artist_id)
-
-        for single_artist_id, single_artist_name in zip(artists_id, artists_name):
-            db.create_artist_node(single_artist_id)
-            db.set_artist_property(single_artist_id, "name", single_artist_name)
-            db.connect_nodes("track", track_id, "artist", single_artist_id)
-
-        
+    get_and_store_all_saved_tracks(sp)
+    get_and_store_audio_features_of_all_tracks(sp)
 
     db.close_connection()
 
@@ -98,4 +151,3 @@ def main():
 if __name__ == "__main__":
     main()
     print("finished")
-
