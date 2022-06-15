@@ -30,6 +30,11 @@ def connect_nodes(node_a_type, node_a_id, node_b_type, node_b_id):
             return connect_artist_and_album(node_a_id, node_b_id)
         return connect_artist_and_album(node_b_id, node_a_id)
 
+    if "ARTIST" in types and "GENRE" in types:
+        if node_a_type.upper() == "ARTIST":
+            return connect_artist_and_genre(node_a_id, node_b_id)
+        return connect_artist_and_genre(node_b_id, node_a_id)
+
 def connect_track_and_album(track_id, album_id):
     global Driver
 
@@ -61,7 +66,7 @@ def connect_track_and_artist(track_id, artist_id):
                 (t:Track),
                 (a:Artist)
             WHERE t.id = $track_id AND a.id = $artist_id
-            MERGE (a)-[w:Wrote]->(t)
+            MERGE (a)-[w:Preformed]->(t)
             RETURN w
         """, 
             track_id=track_id,
@@ -93,6 +98,28 @@ def connect_artist_and_album(artist_id, album_id):
 
     with Driver.session() as session:
         result = session.write_transaction(connect_artist_and_album_query)
+
+    return [record for record in result]
+
+def connect_artist_and_genre(artist_id, genre_name):
+    global Driver
+
+    def connect_artist_and_genre_query(tx):
+        result = tx.run("""
+            MATCH
+                (a:Artist),
+                (g:Genre)
+            WHERE a.id = $artist_id AND g.name = $genre_name
+            MERGE (a)-[u:Uses]->(g)
+            RETURN u
+        """, 
+            artist_id=artist_id,
+            genre_name=genre_name
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(connect_artist_and_genre_query)
 
     return [record for record in result]
 
@@ -327,3 +354,76 @@ def delete_artist_node(id):
 
     with Driver.session() as session:
         session.write_transaction(delete_artist_query)
+
+
+
+def create_genre_node(name):
+    global Driver
+
+    def create_genre_query(tx):
+        result = tx.run("MERGE (g:Genre{name:$name}) RETURN g",
+            name=name
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(create_genre_query)
+
+    return [record for record in result]
+
+def set_genre_property(name, propertyName, propertyValue):
+    global Driver
+
+    def set_genre_property_query(tx):
+        result = tx.run("""
+            MATCH (g:Genre{name:$name}) 
+            SET g.""" + propertyName + """ = $value
+            RETURN g
+            """, 
+            name=name,
+            value=propertyValue
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(set_genre_property_query)
+
+    return [record for record in result]
+
+def get_genre_node(name):
+    global Driver
+
+    def get_genre_query(tx):
+        result = tx.run("MATCH (g:Genre{name:$name}) RETURN g", 
+            name=name
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(get_genre_query)
+
+    return [record for record in result]
+
+def get_all_genre_nodes():
+    global Driver
+
+    def get_all_genre_query(tx):
+        result = tx.run("MATCH (g:Genre) RETURN g"
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(get_all_genre_query)
+
+    return [record for record in result]
+
+def delete_genre_node(name):
+    global Driver
+
+    def delete_genre_query(tx):
+        tx.run("MATCH (g:Genre{name:$name}) DELETE g", 
+            name=name
+        ).data()
+
+    with Driver.session() as session:
+        session.write_transaction(delete_genre_query)
