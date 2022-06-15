@@ -41,7 +41,7 @@ def get_and_store_all_saved_tracks(sp):
     saved_tracks = sp.current_user_saved_tracks(limit=max_limit_saved_tracks, offset=offset)
 
     while len(saved_tracks['items']) > 0:
-        print(f"tracks: {offset} - {offset + max_limit_saved_tracks}")
+        print(f"Tracks: {offset} - {offset + max_limit_saved_tracks}")
         sleep(0.5)
 
         for track in saved_tracks['items']:
@@ -138,12 +138,37 @@ def get_and_store_audio_features_of_all_tracks(sp):
             db.set_track_property(id, "tempo",            tempo)
             db.set_track_property(id, "time_signature",   time_signature)
 
+def get_and_store_artist_data_of_all_artists(sp):
+    artist_data = db.get_all_artist_nodes()
+    artists = [artist['a']['id'] for artist in artist_data]
+    max_limit_artist = 50
+
+    for index in range(0, len(artists), max_limit_artist):
+        sleep(0.5)
+        print(f"Artists: {index} - {index+max_limit_artist}")
+        artists_subset = artists[index:index+max_limit_artist]
+        results = sp.artists(artists_subset)
+
+        for artist in results['artists']:
+            id         = artist['id']
+            followers  = artist['followers']['total']
+            genres     = artist['genres']
+            popularity = artist['popularity']
+
+            for genre in genres:
+                db.create_genre_node(genre)
+                db.connect_nodes("artist", id, "genre", genre)
+            
+            db.set_artist_property(id, "followers",  followers)
+            db.set_artist_property(id, "popularity", popularity)
+
 def main():
     init_db()
     sp = init_sp()
 
-    get_and_store_all_saved_tracks(sp)
-    get_and_store_audio_features_of_all_tracks(sp)
+    # get_and_store_all_saved_tracks(sp)
+    # get_and_store_audio_features_of_all_tracks(sp)
+    # get_and_store_artist_data_of_all_artists(sp)
 
     db.close_connection()
 
