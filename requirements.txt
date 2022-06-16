@@ -1,3 +1,5 @@
 spotipy
 python-dotenv
 neo4j
+pandas
+matplotlib
