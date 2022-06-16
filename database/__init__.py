@@ -162,6 +162,25 @@ def set_track_property(id, propertyName, propertyValue):
 
     return [record for record in result]
 
+def set_track_datetime(id, datetime):
+    global Driver
+
+    def set_track_datetime_query(tx):
+        result = tx.run("""
+            MATCH (t:Track{id:$id}) 
+            SET t.added_at = datetime($datetime)
+            RETURN t
+            """, 
+            id=id,
+            datetime=datetime
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(set_track_datetime_query)
+
+    return [record for record in result]
+
 def get_track_node(id):
     global Driver
 
@@ -237,6 +256,25 @@ def set_album_property(id, propertyName, propertyValue):
 
     with Driver.session() as session:
         result = session.write_transaction(set_album_property_query)
+
+    return [record for record in result]
+
+def set_album_datetime(id, datetime):
+    global Driver
+
+    def set_album_datetime_query(tx):
+        result = tx.run("""
+            MATCH (b:Album{id:$id}) 
+            SET b.release_date = date($datetime)
+            RETURN b
+            """, 
+            id=id,
+            datetime=datetime
+        ).data()
+        return result
+
+    with Driver.session() as session:
+        result = session.write_transaction(set_album_datetime_query)
 
     return [record for record in result]
 

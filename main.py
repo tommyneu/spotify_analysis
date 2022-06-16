@@ -76,14 +76,14 @@ def get_and_store_all_saved_tracks(sp):
             db.set_track_property(track_id, "duration_ms", track_duration_ms)
             db.set_track_property(track_id, "explicit",    track_explicit)
             db.set_track_property(track_id, "popularity",  track_popularity)
-            db.set_track_property(track_id, "added_at",    track_added_at)
+            db.set_track_datetime(track_id, track_added_at)
 
             db.create_album_node(album_id)
             db.set_album_property(album_id, "name",                   album_name)
             db.set_album_property(album_id, "type",                   album_type)
-            db.set_album_property(album_id, "release_date",           album_release_date)
             db.set_album_property(album_id, "release_date_precision", album_release_date_precision)
             db.set_album_property(album_id, "number_of_tracks",       album_number_of_tracks)
+            db.set_album_datetime(album_id, album_release_date)
             db.connect_nodes("album", album_id, "track", track_id)
 
             for single_artist_id, single_artist_name in zip(album_artists_id, album_artists_name):
