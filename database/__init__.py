@@ -41,9 +41,10 @@ def connect_track_and_album(track_id, album_id):
     def connect_track_and_album_query(tx):
         result = tx.run("""
             MATCH
-                (t:Track),
-                (b:Album)
-            WHERE t.id = $track_id AND b.id = $album_id
+                (t:Track{id:$track_id})
+            WITH t
+            MATCH
+                (b:Album{id:$album_id})
             MERGE (t)-[i:In]->(b)
             RETURN i
         """, 
@@ -63,9 +64,10 @@ def connect_track_and_artist(track_id, artist_id):
     def connect_track_and_artist_query(tx):
         result = tx.run("""
             MATCH
-                (t:Track),
-                (a:Artist)
-            WHERE t.id = $track_id AND a.id = $artist_id
+                (t:Track{id:$track_id})
+            WITH t
+            MATCH
+                (a:Artist{id:$artist_id})
             MERGE (a)-[w:Preformed]->(t)
             RETURN w
         """, 
@@ -85,9 +87,10 @@ def connect_artist_and_album(artist_id, album_id):
     def connect_artist_and_album_query(tx):
         result = tx.run("""
             MATCH
-                (a:Artist),
-                (b:Album)
-            WHERE a.id = $artist_id AND b.id = $album_id
+                (a:Artist{id: $artist_id})
+            WITH a
+            MATCH
+                (b:Album{id: $album_id})
             MERGE (a)-[p:Produced]->(b)
             RETURN p
         """, 
@@ -107,9 +110,10 @@ def connect_artist_and_genre(artist_id, genre_name):
     def connect_artist_and_genre_query(tx):
         result = tx.run("""
             MATCH
-                (a:Artist),
-                (g:Genre)
-            WHERE a.id = $artist_id AND g.name = $genre_name
+                (a:Artist{id: $artist_id})
+            WITH a
+            MATCH
+                (g:Genre{id: $genre_name})
             MERGE (a)-[u:Uses]->(g)
             RETURN u
         """, 
