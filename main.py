@@ -6,6 +6,7 @@ import spotipy.util as util
 import database as db
 import json
 import analysis as an
+import subprocess
 
 def init_sp():
     load_dotenv()
@@ -164,6 +165,15 @@ def get_and_store_artist_data_of_all_artists(sp):
             
             db.set_artist_property(id, "followers",  followers)
             db.set_artist_property(id, "popularity", popularity)
+
+def download_tracks():
+    tracks_data = db.get_all_track_nodes()
+    tracks = [track['t']['href'] for track in tracks_data]
+    max_limit_tracks = 50
+
+    for index in range(0, len(tracks)):
+        print(f"Track Download: {index + 1}")
+        subprocess.run(['/Users/tneumann9/Documents/Personal Projects/spotify_analysis/venv/bin/spotdl', '--output', './tracks', 'download', tracks[index]])
 
 def main():
     init_db()

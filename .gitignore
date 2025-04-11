@@ -3,3 +3,5 @@
 *.csv
 neo4j/
 __pycache__/
+tracks/
+venv/

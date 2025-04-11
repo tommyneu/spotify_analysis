@@ -2,7 +2,9 @@
 
 Install docker, python, and pip on your machine
 
-Run `pip install -r requirements.txt` to install all python modules
+Run `python3 -m venv ./venv` to create a venv
+Run `venv/bin/pip3 install -r requirements.txt` to install all python modules
+Run `venv/bin/python3 main.py` to run main.py
 
 Duplicate **sample.env** file to **.env** and fill it in with your data from the spotify api
 
