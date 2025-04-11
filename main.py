@@ -53,7 +53,7 @@ def get_and_store_all_saved_tracks(sp):
             track_duration_ms = track['track']['duration_ms']
             track_explicit    = track['track']['explicit']
             track_popularity  = track['track']['popularity']
-            track_href        = track['track']['href']
+            track_href        = track['track']['external_urls']['spotify']
 
             artists_id   = [artist['id'] for artist in track['track']['artists']]
             artists_name = [artist['name'] for artist in track['track']['artists']]
