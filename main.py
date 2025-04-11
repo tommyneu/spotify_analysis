@@ -172,7 +172,7 @@ def download_tracks():
     max_limit_tracks = 50
 
     for index in range(0, len(tracks)):
-        print(f"Track Download: {index + 1}")
+        print(f"Track Download: {index + 1} of {len(tracks)}")
         subprocess.run(['/Users/tneumann9/Documents/Personal Projects/spotify_analysis/venv/bin/spotdl', '--output', './tracks', 'download', tracks[index]])
 
 def main():
