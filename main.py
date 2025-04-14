@@ -171,9 +171,13 @@ def download_tracks():
     tracks = [track['t']['href'] for track in tracks_data]
     max_limit_tracks = 50
 
-    for index in range(0, len(tracks)):
-        print(f"Track Download: {index + 1} of {len(tracks)}")
-        subprocess.run(['/Users/tneumann9/Documents/Personal Projects/spotify_analysis/venv/bin/spotdl', '--output', './tracks', 'download', tracks[index]])
+    for index in range(0, len(tracks), max_limit_tracks):
+        track_subset = tracks[index:index+max_limit_tracks]
+
+        process_args = ['./venv/bin/spotdl', '--output', './tracks', 'download']
+        process_args.extend(track_subset)
+        print(f"Track Download: {index} - {index+max_limit_tracks} of {len(tracks)}")
+        subprocess.run(process_args)
 
 def main():
     init_db()
