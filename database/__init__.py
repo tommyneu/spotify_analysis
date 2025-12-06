@@ -54,7 +54,7 @@ def connect_track_and_album(track_id, album_id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(connect_track_and_album_query)
+        result = session.execute_write(connect_track_and_album_query)
 
     return [record for record in result]
 
@@ -77,7 +77,7 @@ def connect_track_and_artist(track_id, artist_id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(connect_track_and_artist_query)
+        result = session.execute_write(connect_track_and_artist_query)
 
     return [record for record in result]
 
@@ -100,7 +100,7 @@ def connect_artist_and_album(artist_id, album_id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(connect_artist_and_album_query)
+        result = session.execute_write(connect_artist_and_album_query)
 
     return [record for record in result]
 
@@ -123,7 +123,7 @@ def connect_artist_and_genre(artist_id, genre_name):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(connect_artist_and_genre_query)
+        result = session.execute_write(connect_artist_and_genre_query)
 
     return [record for record in result]
 
@@ -143,7 +143,7 @@ def create_track_node(id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(create_track_query)
+        result = session.execute_write(create_track_query)
 
     return [record for record in result]
 
@@ -162,7 +162,7 @@ def set_track_property(id, propertyName, propertyValue):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(set_track_property_query)
+        result = session.execute_write(set_track_property_query)
 
     return [record for record in result]
 
@@ -181,7 +181,7 @@ def set_track_datetime(id, datetime):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(set_track_datetime_query)
+        result = session.execute_write(set_track_datetime_query)
 
     return [record for record in result]
 
@@ -195,7 +195,7 @@ def get_track_node(id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_track_query)
+        result = session.execute_write(get_track_query)
 
     return [record for record in result]
 
@@ -208,7 +208,7 @@ def get_all_track_nodes():
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_all_track_query)
+        result = session.execute_write(get_all_track_query)
 
     return [record for record in result]
 
@@ -221,7 +221,7 @@ def delete_track_node(id):
         ).data()
 
     with Driver.session() as session:
-        session.write_transaction(delete_track_query)
+        session.execute_write(delete_track_query)
 
 
 #            _ _
@@ -240,7 +240,7 @@ def create_album_node(id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(create_album_query)
+        result = session.execute_write(create_album_query)
 
     return [record for record in result]
 
@@ -259,7 +259,7 @@ def set_album_property(id, propertyName, propertyValue):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(set_album_property_query)
+        result = session.execute_write(set_album_property_query)
 
     return [record for record in result]
 
@@ -278,7 +278,7 @@ def set_album_datetime(id, datetime):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(set_album_datetime_query)
+        result = session.execute_write(set_album_datetime_query)
 
     return [record for record in result]
 
@@ -292,7 +292,7 @@ def get_album_node(id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_album_query)
+        result = session.execute_write(get_album_query)
 
     return [record for record in result]
 
@@ -305,7 +305,7 @@ def get_all_album_nodes():
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_all_album_query)
+        result = session.execute_write(get_all_album_query)
 
     return [record for record in result]
 
@@ -318,7 +318,7 @@ def delete_album_node(id):
         ).data()
 
     with Driver.session() as session:
-        session.write_transaction(delete_album_query)
+        session.execute_write(delete_album_query)
 
 #                 _   _     _
 #      /\        | | (_)   | |
@@ -336,7 +336,7 @@ def create_artist_node(id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(create_artist_query)
+        result = session.execute_write(create_artist_query)
 
     return [record for record in result]
 
@@ -355,7 +355,7 @@ def set_artist_property(id, propertyName, propertyValue):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(set_artist_property_query)
+        result = session.execute_write(set_artist_property_query)
 
     return [record for record in result]
 
@@ -369,7 +369,7 @@ def get_artist_node(id):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_artist_query)
+        result = session.execute_write(get_artist_query)
 
     return [record for record in result]
 
@@ -382,7 +382,7 @@ def get_all_artist_nodes():
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_all_artist_query)
+        result = session.execute_write(get_all_artist_query)
 
     return [record for record in result]
 
@@ -395,7 +395,7 @@ def delete_artist_node(id):
         ).data()
 
     with Driver.session() as session:
-        session.write_transaction(delete_artist_query)
+        session.execute_write(delete_artist_query)
 
 
 
@@ -409,7 +409,7 @@ def create_genre_node(name):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(create_genre_query)
+        result = session.execute_write(create_genre_query)
 
     return [record for record in result]
 
@@ -428,7 +428,7 @@ def set_genre_property(name, propertyName, propertyValue):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(set_genre_property_query)
+        result = session.execute_write(set_genre_property_query)
 
     return [record for record in result]
 
@@ -442,7 +442,7 @@ def get_genre_node(name):
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_genre_query)
+        result = session.execute_write(get_genre_query)
 
     return [record for record in result]
 
@@ -455,7 +455,7 @@ def get_all_genre_nodes():
         return result
 
     with Driver.session() as session:
-        result = session.write_transaction(get_all_genre_query)
+        result = session.execute_write(get_all_genre_query)
 
     return [record for record in result]
 
@@ -468,4 +468,4 @@ def delete_genre_node(name):
         ).data()
 
     with Driver.session() as session:
-        session.write_transaction(delete_genre_query)
+        session.execute_write(delete_genre_query)

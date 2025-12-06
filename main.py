@@ -183,18 +183,18 @@ def main():
     init_db()
     sp = init_sp()
 
-    # get_and_store_all_saved_tracks(sp)
+    get_and_store_all_saved_tracks(sp)
     # get_and_store_audio_features_of_all_tracks(sp)
-    # get_and_store_artist_data_of_all_artists(sp)
+    get_and_store_artist_data_of_all_artists(sp)
 
-    results = db.get_all_track_nodes()
-    results = [track['t'] for track in results]
-    for track in results:
-        del track['added_at']
-    an.load_data(json.dumps(results))
+    # results = db.get_all_track_nodes()
+    # results = [track['t'] for track in results]
+    # for track in results:
+    #     del track['added_at']
+    # an.load_data(json.dumps(results))
 
-    # an.plot_data('acousticness', 'danceability')
-    an.fcm()
+    # # an.plot_data('acousticness', 'danceability')
+    # an.fcm()
 
     db.close_connection()
 
